@@ -5,10 +5,12 @@ import net.ilexiconn.llibrary.server.entity.EntityPropertiesHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.EnumHelper;
 
 import javax.annotation.Nullable;
@@ -19,6 +21,7 @@ public abstract class InFCompat {
     public static final Item.ToolMaterial DRAGON_BONE = com.github.alexthe666.iceandfire.core.ModItems.boneTools;
     public static final Item.ToolMaterial DRAGON_BONE_FLAMED = com.github.alexthe666.iceandfire.core.ModItems.fireBoneTools;
     public static final Item.ToolMaterial DRAGON_BONE_ICED = com.github.alexthe666.iceandfire.core.ModItems.iceBoneTools;
+    public static final Item.ToolMaterial DRAGON_BONE_LIGHTNING = com.github.alexthe666.iceandfire.core.ModItems.lightningBoneTools;
     public static final Item.ToolMaterial JUNGLE_CHITIN = EnumHelper.addToolMaterial(
             "JungleChitin",
             com.github.alexthe666.iceandfire.core.ModItems.myrmexChitin.getHarvestLevel(),
@@ -73,6 +76,17 @@ public abstract class InFCompat {
                 return 8.0F;
             }
         }
+        else if(mat == InFCompat.DRAGON_BONE_LIGHTNING) {
+            if (!target.world.isRemote) {
+                EntityLightningBolt lightningBolt = new EntityLightningBolt(target.world, target.posX, target.posY, target.posZ, false);
+                target.world.spawnEntity(lightningBolt);
+            }
+            if (target instanceof EntityFireDragon || target instanceof EntityIceDragon) {
+                target.attackEntityFrom(DamageSource.LIGHTNING_BOLT, 9.5F);
+            }
+            target.knockBack(target, 1F, player.posX - target.posX, player.posZ - target.posZ);
+        }
+
         return 0.0F;
     }
 
